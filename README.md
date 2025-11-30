@@ -4,3 +4,4 @@ So please, if you wish to "expose" me, take note of that.
 You know what would also make you look like a clown? I'm using free hosting, thanks to _Infinityfree_.
 
 > If you are here just to modify the code and do something other than this, then thank you so much and you are free to use my code! make sure the include the [LICENSE](https://github.com/massiveL0L/mbpwiki/blob/main/LICENSE) file to abide by the [MIT license](https://opensource.org/license/mit).
+> Also if you want to issue something or pull request, feel free to do so.
