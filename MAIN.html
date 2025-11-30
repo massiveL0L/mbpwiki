@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>mbpwiki</title>
+	<style>
+		/* ------------------------------
+   RESET / GLOBALS
+------------------------------ */
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: Arial, sans-serif;
+		}
+
+		body {
+			background: #1b2838;
+			color: #c7d5e0;
+			display: flex;
+			min-height: 100vh;
+		}
+
+		a {
+			text-decoration: none;
+			color: inherit;
+			cursor: pointer;
+		}
+
+		/* ------------------------------
+   SIDEBAR
+------------------------------ */
+		.sidebar {
+			width: 220px;
+			background: #171a21;
+			display: flex;
+			flex-direction: column;
+			padding: 20px;
+		}
+
+		.sidebar h2 {
+			margin-bottom: 20px;
+			color: #66c0f4;
+			font-size: 24px;
+		}
+
+		.sidebar a {
+			padding: 12px 10px;
+			margin-bottom: 10px;
+			border-radius: 5px;
+			display: block;
+			transition: background 0.2s;
+		}
+
+		.sidebar a:hover,
+		.sidebar a.active {
+			background: #2a475e;
+		}
+
+		/* ------------------------------
+   MAIN CONTENT
+------------------------------ */
+		.main {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+		}
+
+		.top-bar {
+			background: #2a475e;
+			padding: 10px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.top-bar .title {
+			font-weight: bold;
+		}
+
+		/* ------------------------------
+   INPUTS
+------------------------------ */
+		.top-bar .inputs {
+			display: flex;
+			gap: 10px;
+		}
+
+		.top-bar input {
+			padding: 6px 12px;
+			border-radius: 5px;
+			border: 1px solid #2a475e;
+			background: #1b2838;
+			color: #c7d5e0;
+			font-size: 14px;
+			width: 180px;
+			transition: border 0.2s, background 0.2s;
+		}
+
+		.top-bar input::placeholder {
+			color: #7a8a99;
+		}
+
+		.top-bar input:focus {
+			outline: none;
+			border-color: #66c0f4;
+			background: #22334b;
+		}
+
+		/* ------------------------------
+   SECTIONS
+------------------------------ */
+		.section {
+			display: none;
+			padding: 20px;
+		}
+
+		.section.active {
+			display: block;
+		}
+
+		/* ------------------------------
+   GAME GRID
+------------------------------ */
+		.game-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+			gap: 20px;
+		}
+
+		.game-card {
+			background: #171a21;
+			border-radius: 10px;
+			overflow: hidden;
+			transition: transform 0.2s, box-shadow 0.2s;
+			padding: 20px;
+			cursor: pointer;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+			min-height: 200px;
+			text-align: center;
+			pointer-events: auto;
+		}
+
+		.game-card:hover {
+			transform: scale(1.05);
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+		}
+
+		.game-card .game-title {
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+		.game-card .game-placeholder {
+			font-size: 12px;
+			color: #7a8a99;
+		}
+
+		/* ------------------------------
+   BETA POPUP
+------------------------------ */
+		#betaPopup {
+			position: fixed;
+			top: 20%;
+			left: 50%;
+			transform: translateX(-50%) scale(0.8);
+			background: #2a475e;
+			color: #c7d5e0;
+			padding: 20px 30px;
+			border-radius: 10px;
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+			z-index: 1000;
+			display: none;
+			text-align: center;
+			font-size: 16px;
+			opacity: 0;
+			transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+		}
+
+		#betaPopup.show {
+			display: block;
+			opacity: 1;
+			transform: translateX(-50%) scale(1);
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- Sidebar -->
+	<div class="sidebar">
+		<h2>mbp/home</h2>
+		<a class="tab-link active" data-target="library">Library</a>
+		<a id="editorLink">Editor</a>
+	</div>
+
+	<!-- Main content -->
+	<div class="main">
+		<div class="top-bar">
+			<div class="title">Wiki</div>
+			<div class="inputs">
+				<input type="text" class="search-box" placeholder="Search mbpwiki...">
+				<input type="text" class="code-input" placeholder="Enter code...">
+			</div>
+			</div>
+
+			<!-- Library Section -->
+			<div id="library" class="section active">
+				<div class="game-grid">
+					<a href="https://mbpwiki.ct.ws/astrea.html" class="game-card">
+						<div class="game-title">Astrea</div>
+						<div class="game-placeholder">massive • unofficial</div>
+					</a>
+					<a href="#" class="game-card">
+						<div class="game-title">Under Construction</div>
+						<div class="game-placeholder">nil • nil</div>
+					</a>
+					<a href="#" class="game-card">
+						<div class="game-title">Under Construction</div>
+						<div class="game-placeholder">nil • nil</div>
+					</a>
+					<a href="#" class="game-card">
+						<div class="game-title">Under Construction</div>
+						<div class="game-placeholder">nil • nil</div>
+					</a>
+				</div>
+			</div>
+
+		</div>
+
+		<!-- Beta Popup -->
+		<div id="betaPopup">⚠️ Warning: Editor is in BETA! Redirecting in 3 seconds...</div>
+
+		<script>
+			// Tab switching
+		const tabs = document.querySelectorAll('.tab-link[data-target]');
+		const sections = document.querySelectorAll('.section');
+		tabs.forEach(tab => {
+			tab.addEventListener('click', () => {
+				tabs.forEach(t => t.classList.remove('active'));
+				tab.classList.add('active');
+				const target = tab.dataset.target;
+				sections.forEach(sec => sec.classList.toggle('active', sec.id === target));
+			});
+		});
+
+		// Search filter
+		const searchBox = document.querySelector('.search-box');
+		const gameCards = document.querySelectorAll('#library .game-card');
+		searchBox.addEventListener('input', () => {
+			const query = searchBox.value.toLowerCase();
+			gameCards.forEach(card => {
+				const title = card.querySelector('.game-title').textContent.toLowerCase();
+				card.style.display = title.includes(query) ? 'flex' : 'none';
+			});
+		});
+
+		// Editor beta popup with zoom animation
+		const editorLink = document.getElementById('editorLink');
+		const betaPopup = document.getElementById('betaPopup');
+		editorLink.addEventListener('click', () => {
+			betaPopup.classList.add('show');
+			setTimeout(() => {
+				betaPopup.classList.remove('show');
+				window.location.href = 'https://mbpwiki.ct.ws/editor.html';
+			}, 3000);
+		});
+
+		// Code input redirect
+		const codeInput = document.querySelector('.code-input');
+		codeInput.addEventListener('keypress', function (event) {
+			if (event.key === 'Enter') {
+				const code = codeInput.value.trim();
+				if (code) {
+					window.location.href = `https://mbpwiki.ct.ws/${encodeURIComponent(code)}.html`;
+				}
+			}
+		});
+		</script>
+
+</body>
+
+</html>
