@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>mbp/editor</title>
+
+	<style>
+		:root {
+			--bg: #ffffff;
+			--text: #222;
+			--nav-bg: #2f3136;
+			--nav-text: #eee;
+			--accent: #5b7fff;
+		}
+
+		.dark {
+			--bg: #181a1b;
+			--text: #f0f0f0;
+			--nav-bg: #202225;
+			--nav-text: #ccc;
+			--accent: #8aa0ff;
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			transition: background 0.35s, color 0.35s;
+			font-family: Arial, sans-serif;
+		}
+
+		body {
+			display: flex;
+			background: var(--bg);
+			color: var(--text);
+			overflow: hidden;
+		}
+
+		nav {
+			width: 260px;
+			background: var(--nav-bg);
+			color: var(--nav-text);
+			height: 100vh;
+			padding: 20px;
+			overflow-y: auto;
+			transition: width 0.4s ease;
+			position: relative;
+			min-width: 60px;
+		}
+
+		nav.collapsed {
+			width: 60px;
+		}
+
+		nav h2 {
+			margin-bottom: 20px;
+			font-size: 20px;
+			opacity: 1;
+			transition: opacity 0.3s;
+			word-break: break-word;
+		}
+
+		nav.collapsed h2 {
+			opacity: 0;
+		}
+
+		nav ul {
+			list-style: none;
+		}
+
+		nav li {
+			margin: 12px 0;
+		}
+
+		nav a {
+			color: var(--nav-text);
+			text-decoration: none;
+			cursor: pointer;
+			padding: 6px 8px;
+			display: inline-block;
+			border-radius: 6px;
+			transition: background 0.25s, transform 0.15s;
+		}
+
+		nav a:hover {
+			background: rgba(255, 255, 255, 0.1);
+			transform: translateX(4px);
+		}
+
+		#collapseBtn {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			right: -15px;
+			width: 30px;
+			height: 60px;
+			background: var(--accent);
+			border-top-left-radius: 30px;
+			border-bottom-left-radius: 30px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+			z-index: 10;
+			box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+		}
+
+		#collapseArrow {
+			display: inline-block;
+			transition: transform 0.4s ease;
+		}
+
+		nav.collapsed #collapseArrow {
+			transform: rotate(180deg);
+		}
+
+		#searchBox {
+			width: 100%;
+			padding: 8px;
+			margin-bottom: 15px;
+			border-radius: 6px;
+			border: none;
+			outline: none;
+			transition: box-shadow 0.3s, transform 0.3s;
+		}
+
+		#searchBox:focus {
+			box-shadow: 0 0 10px var(--accent);
+			transform: scale(1.03);
+		}
+
+		main {
+			flex: 1;
+			padding: 40px;
+			overflow-y: auto;
+			height: 100vh;
+		}
+
+		.page-title {
+			font-size: 2rem;
+			margin-bottom: 10px;
+			opacity: 0;
+			transform: translateY(10px);
+			animation: fadeSlideIn 0.6s forwards;
+			word-break: break-word;
+		}
+
+		.page-content p {
+			margin-bottom: 12px;
+			line-height: 1.6;
+			opacity: 0;
+			animation: fadeIn 0.6s forwards;
+		}
+
+		@keyframes fadeSlideIn {
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		@keyframes fadeIn {
+			to {
+				opacity: 1;
+			}
+		}
+
+		#themeToggle,
+		#exportHTMLBtn {
+			position: absolute;
+			bottom: 20px;
+			left: 20px;
+			background: var(--accent);
+			border: none;
+			cursor: pointer;
+			padding: 10px 12px;
+			border-radius: 8px;
+			color: white;
+			transition: transform 0.4s ease;
+			margin-left: 0;
+		}
+
+		#themeToggle:hover,
+		#exportHTMLBtn:hover {
+			transform: rotate(20deg) scale(1.1);
+		}
+
+		#exportHTMLBtn {
+			bottom: 70px;
+		}
+
+		#historyBox {
+			margin-top: 20px;
+			background: rgba(255, 255, 255, 0.08);
+			padding: 10px;
+			border-radius: 5px;
+			display: none;
+			animation: fadeIn 0.5s forwards;
+		}
+
+		#historyBtn {
+			display: block;
+			color: var(--nav-text);
+			margin-top: 15px;
+			cursor: pointer;
+			padding: 6px 8px;
+			background: rgba(255, 255, 255, 0.07);
+			border-radius: 6px;
+			transition: background 0.25s;
+		}
+
+		#historyBtn:hover {
+			background: rgba(255, 255, 255, 0.15);
+		}
+
+		#editBtn,
+		#saveBtn,
+		#newPageBtn {
+			margin: 10px 0;
+			padding: 6px 10px;
+			background: var(--accent);
+			border: none;
+			color: white;
+			border-radius: 6px;
+			cursor: pointer;
+		}
+
+		#editBtn:hover,
+		#saveBtn:hover,
+		#newPageBtn:hover {
+			opacity: 0.9;
+		}
+
+		textarea,
+		input[type="text"].title-edit,
+		input[type="text"].site-title-edit {
+			width: 100%;
+			padding: 8px;
+			font-size: 1rem;
+			border-radius: 6px;
+			border: 1px solid #ccc;
+			margin-top: 10px;
+			box-sizing: border-box;
+		}
+
+		textarea {
+			min-height: 150px;
+			resize: vertical;
+		}
+
+		@media screen and (max-width: 768px) {
+			body {
+				flex-direction: column;
+			}
+
+			nav {
+				width: 100%;
+				height: auto;
+				display: flex;
+				flex-wrap: wrap;
+				padding: 10px;
+			}
+
+			main {
+				width: 100%;
+				height: auto;
+				padding: 20px;
+			}
+
+			#collapseBtn {
+				display: none;
+			}
+
+			nav.collapsed {
+				width: 100%;
+			}
+
+			#themeToggle,
+			#exportHTMLBtn {
+				left: auto;
+				right: 20px;
+				bottom: 20px;
+			}
+
+			#exportHTMLBtn {
+				bottom: 60px;
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<nav>
+		<div id="collapseBtn"><span id="collapseArrow">⮜</span></div>
+		<h2 id="siteTitle">mbp/editor</h2>
+		<input type="text" id="searchBox" placeholder="Search pages...">
+		<ul id="navList"></ul>
+		<button id="newPageBtn">+ New Page</button>
+		<span id="historyBtn">History ▼</span>
+		<div id="historyBox"></div>
+		<button id="themeToggle">☀ / 🌙</button>
+		<button id="exportHTMLBtn">Export HTML</button>
+	</nav>
+
+	<main>
+		<h1 class="page-title">Welcome</h1>
+		<div class="page-content">
+			<p>Click a page from the left.</p>
+		</div>
+		<button id="editBtn">Edit Page</button>
+		<button id="saveBtn" style="display:none;">Save Changes</button>
+	</main>
+
+	<script>
+		// ----------------- DATA -----------------
+    let pages = {
+      page1: { title: "Editor (BETA)", content: ["Welcome to the wiki!", "Click pages on the left to navigate."] },
+      page2: { title: "Info", content: ["This is an editable wiki.", "You can add pages and edit them live."] }
+    };
+    let historyArr = [];
+    let navList = document.getElementById("navList");
+    let siteTitleEl = document.getElementById("siteTitle");
+    let historyBox = document.getElementById("historyBox");
+    let currentKey = null;
+
+    // ----------------- NAV & PAGE -----------------
+    function updateNav() {
+      navList.innerHTML = "";
+      Object.keys(pages).forEach((key) => {
+        let li = document.createElement("li");
+        let a = document.createElement("a");
+        a.textContent = pages[key].title;
+        a.onclick = () => loadPage(key);
+        li.appendChild(a);
+        navList.appendChild(li);
+      });
+    }
+
+    function loadPage(key) {
+      currentKey = key;
+      let page = pages[key];
+      if (!page) return;
+
+      historyArr.push(page.title);
+      updateHistory();
+
+      let titleEl = document.querySelector(".page-title");
+      let contentBox = document.querySelector(".page-content");
+
+      titleEl.style.animation = "none";
+      contentBox.style.animation = "none";
+      titleEl.offsetHeight;
+
+      titleEl.textContent = page.title;
+      contentBox.innerHTML = "";
+      titleEl.style.animation = "fadeSlideIn .6s forwards";
+
+      page.content.forEach((line, i) => {
+        let p = document.createElement("p");
+        p.textContent = line;
+        p.style.animationDelay = (i * 0.07) + "s";
+        contentBox.appendChild(p);
+      });
+
+      document.getElementById("editBtn").style.display = "inline-block";
+      document.getElementById("saveBtn").style.display = "none";
+    }
+
+    function updateHistory() {
+      historyBox.innerHTML = "";
+      historyArr.slice(-10).forEach(h => {
+        let p = document.createElement("p");
+        p.textContent = h;
+        historyBox.appendChild(p);
+      });
+    }
+
+    // ----------------- INTERACTIONS -----------------
+    document.getElementById("collapseBtn").onclick = () => { document.querySelector("nav").classList.toggle("collapsed"); };
+    document.getElementById("themeToggle").onclick = () => { document.body.classList.toggle("dark"); };
+    document.getElementById("searchBox").addEventListener("input", function () {
+      let q = this.value.toLowerCase();
+      document.querySelectorAll("#navList li").forEach(li => { li.style.display = li.textContent.toLowerCase().includes(q) ? "block" : "none"; });
+    });
+    document.getElementById("historyBtn").onclick = () => { historyBox.style.display = historyBox.style.display === "block" ? "none" : "block"; };
+
+    document.getElementById("editBtn").onclick = () => {
+      if (!currentKey) return;
+      let page = pages[currentKey];
+      let contentBox = document.querySelector(".page-content");
+
+      siteTitleEl.innerHTML = `<input type="text" class="site-title-edit" value="${siteTitleEl.textContent}">`;
+      document.querySelector(".page-title").innerHTML = `<input type="text" class="title-edit" value="${page.title}">`;
+      contentBox.innerHTML = `<textarea id="editArea">${page.content.join("\n")}</textarea>`;
+
+      document.getElementById("editBtn").style.display = "none";
+      document.getElementById("saveBtn").style.display = "inline-block";
+    };
+
+    document.getElementById("saveBtn").onclick = () => {
+      const newSiteTitle = document.querySelector(".site-title-edit").value.trim() || "mbp/editor";
+      siteTitleEl.textContent = newSiteTitle;
+
+      const newTitle = document.querySelector(".title-edit").value.trim() || "Untitled";
+      const text = document.getElementById("editArea").value;
+
+      pages[currentKey].title = newTitle;
+      pages[currentKey].content = text.split("\n");
+
+      updateNav();
+      loadPage(currentKey);
+    };
+
+    document.getElementById("newPageBtn").onclick = () => {
+      const key = "page" + (Object.keys(pages).length + 1);
+      pages[key] = { title: "New Page", content: ["Edit this page..."] };
+      updateNav();
+      loadPage(key);
+    };
+
+    // ----------------- EXPORT HTML -----------------
+    document.getElementById("exportHTMLBtn").onclick = () => {
+      let css = document.querySelector("style").innerHTML;
+      let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${siteTitleEl.textContent}</title>
+<style>${css}</style>
+</head>
+<body>
+<nav>
+<h2>${siteTitleEl.textContent}</h2>
+<ul>`;
+      for (let key in pages) { html += `<li><a>${pages[key].title}</a></li>\n`; }
+      html += `</ul>
+</nav>
+<main>`;
+      for (let key in pages) {
+        html += `<h1>${pages[key].title}</h1>\n`;
+        pages[key].content.forEach(line => { html += `<p>${line}</p>\n`; });
+      }
+      html += `</main>
+</body>
+</html>`;
+      navigator.clipboard.writeText(html).then(() => { alert("Full HTML copied!"); });
+    };
+
+    updateNav();
+    loadPage("page1");
+	</script>
+
+</body>
+
+</html>
